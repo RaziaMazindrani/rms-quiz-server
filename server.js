@@ -31,11 +31,14 @@ function getLocalIP() {
 }
 
 const LOCAL_IP = getLocalIP();
-const PUBLIC_URL = process.env.RAILWAY_PUBLIC_DOMAIN 
-  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-  : process.env.PUBLIC_URL 
-  ? process.env.PUBLIC_URL
-  : `http://${LOCAL_IP}:${PORT}`;
+
+// Hardcode the production URL for Railway deployment
+const PRODUCTION_URL = 'https://rms-quiz-server-production.up.railway.app';
+
+// Check if we're in production (Railway sets PORT env var)
+const isProduction = process.env.PORT && process.env.PORT !== '3333';
+
+const PUBLIC_URL = isProduction ? PRODUCTION_URL : `http://${LOCAL_IP}:${PORT}`;
 const QUIZ_URL = `${PUBLIC_URL}/play`;
 
 // Quiz questions
