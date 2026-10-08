@@ -33,6 +33,8 @@ function getLocalIP() {
 const LOCAL_IP = getLocalIP();
 const PUBLIC_URL = process.env.RAILWAY_PUBLIC_DOMAIN 
   ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+  : process.env.PUBLIC_URL 
+  ? process.env.PUBLIC_URL
   : `http://${LOCAL_IP}:${PORT}`;
 const QUIZ_URL = `${PUBLIC_URL}/play`;
 
