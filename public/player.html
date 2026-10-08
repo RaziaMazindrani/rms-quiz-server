@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RMS Quiz - Join</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Join Screen */
+    #joinScreen {
+      text-align: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .logo {
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: #0071e3;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    h1 span { color: #0071e3; }
+
+    .subtitle {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 300px;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-family: inherit;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      text-align: center;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #0071e3;
+      background: rgba(0,113,227,0.1);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+
+    .btn {
+      padding: 16px 48px;
+      font-size: 18px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0071e3 0%, #5856d6 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,113,227,0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Waiting Screen */
+    #waitingScreen {
+      text-align: center;
+      display: none;
+    }
+
+    .player-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: #34c759;
+      margin-bottom: 8px;
+    }
+
+    .waiting-text {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 32px;
+    }
+
+    .pulse-ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0,113,227,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .pulse-ring-inner {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0071e3 0%, #5856d6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+    }
+
+    /* Question Screen */
+    #questionScreen {
+      width: 100%;
+      max-width: 500px;
+      display: none;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .question-num {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #34c759;
+    }
+
+    .timer.warning { color: #ff9f0a; }
+    .timer.danger { color: #ff3b30; animation: shake 0.5s ease infinite; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    .timer-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #34c759 0%, #ff9f0a 70%, #ff3b30 100%);
+      border-radius: 3px;
+      transition: width 0.1s linear;
+    }
+
+    .question-text {
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      padding: 16px 20px;
+      font-size: 16px;
+      font-family: inherit;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: white;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option:hover:not(.selected):not(.disabled) {
+      border-color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .option.selected {
+      border-color: #0071e3;
+      background: rgba(0,113,227,0.2);
+    }
+
+    .option.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .option.correct {
+      border-color: #34c759;
+      background: rgba(52,199,89,0.2);
+    }
+
+    .option.wrong {
+      border-color: #ff3b30;
+      background: rgba(255,59,48,0.2);
+    }
+
+    .option-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .option.selected .option-letter {
+      background: #0071e3;
+    }
+
+    .option.correct .option-letter {
+      background: #34c759;
+    }
+
+    .option.wrong .option-letter {
+      background: #ff3b30;
+    }
+
+    /* Result Screen */
+    #resultScreen {
+      text-align: center;
+      display: none;
+    }
+
+    .result-icon {
+      font-size: 80px;
+      margin-bottom: 16px;
+      animation: bounceIn 0.5s ease;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .result-text {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .result-text.correct { color: #34c759; }
+    .result-text.wrong { color: #ff3b30; }
+
+    .points-earned {
+      font-size: 48px;
+      font-weight: 700;
+      color: #ff9f0a;
+      margin: 16px 0;
+    }
+
+    .total-score {
+      font-size: 16px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .rank-badge {
+      display: inline-block;
+      padding: 8px 24px;
+      background: linear-gradient(135deg, #5856d6 0%, #0071e3 100%);
+      border-radius: 20px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+
+    /* Leaderboard Screen */
+    #leaderboardScreen {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      display: none;
+    }
+
+    .leaderboard-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .leaderboard-item.you {
+      border-color: #0071e3;
+      background: rgba(0,113,227,0.1);
+    }
+
+    .leaderboard-item.top-1 {
+      background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,159,10,0.1) 100%);
+      border-color: #ffd700;
+    }
+
+    .leaderboard-item.top-2 {
+      background: linear-gradient(135deg, rgba(192,192,192,0.2) 0%, rgba(192,192,192,0.1) 100%);
+      border-color: #c0c0c0;
+    }
+
+    .leaderboard-item.top-3 {
+      background: linear-gradient(135deg, rgba(205,127,50,0.2) 0%, rgba(205,127,50,0.1) 100%);
+      border-color: #cd7f32;
+    }
+
+    .rank {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .top-1 .rank { background: #ffd700; color: #1a1a2e; }
+    .top-2 .rank { background: #c0c0c0; color: #1a1a2e; }
+    .top-3 .rank { background: #cd7f32; color: #1a1a2e; }
+
+    .player-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .player-info .name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .player-info .score {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .your-final {
+      margin-top: 32px;
+      padding: 20px;
+      background: linear-gradient(135deg, #0071e3 0%, #5856d6 100%);
+      border-radius: 16px;
+    }
+
+    .your-final-label {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .your-final-score {
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .screen { animation: fadeIn 0.4s ease; }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Join Screen -->
+    <div id="joinScreen" class="screen">
+      <div class="logo">◆ MARRIOTT RMS</div>
+      <h1>Join the <span>Quiz</span></h1>
+      <p class="subtitle">Test your RMS knowledge!</p>
+      <div class="input-group">
+        <input type="text" id="nameInput" placeholder="Enter your name" maxlength="20" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" id="joinBtn" onclick="joinQuiz()">Join Game</button>
+    </div>
+
+    <!-- Waiting Screen -->
+    <div id="waitingScreen" class="screen">
+      <p class="player-name" id="displayName">Player</p>
+      <p class="waiting-text">You're in! Waiting for the quiz to start...</p>
+      <div class="pulse-ring">
+        <div class="pulse-ring-inner">🎯</div>
+      </div>
+    </div>
+
+    <!-- Question Screen -->
+    <div id="questionScreen" class="screen">
+      <div class="question-header">
+        <span class="question-num" id="questionNum">Question 1/5</span>
+        <div class="timer" id="timer">
+          <span>⏱</span>
+          <span id="timerValue">15</span>
+        </div>
+      </div>
+      <div class="timer-bar">
+        <div class="timer-bar-fill" id="timerBar"></div>
+      </div>
+      <div class="question-text" id="questionText">Loading question...</div>
+      <div class="options" id="options"></div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="screen">
+      <div class="result-icon" id="resultIcon">✅</div>
+      <div class="result-text" id="resultText">Correct!</div>
+      <div class="points-earned" id="pointsEarned">+1000</div>
+      <div class="total-score">Total: <span id="totalScore">1000</span> points</div>
+      <div class="rank-badge" id="rankBadge">Rank #1</div>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div id="leaderboardScreen" class="screen">
+      <div class="leaderboard-title">🏆 Final Results</div>
+      <div class="leaderboard-list" id="leaderboardList"></div>
+      <div class="your-final" id="yourFinal">
+        <div class="your-final-label">Your Final Score</div>
+        <div class="your-final-score" id="yourFinalScore">0</div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="confetti" class="confetti"></canvas>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let playerName = '';
+    let currentAnswer = null;
+    let timerInterval = null;
+    let timeLeft = 20;
+    let timeLimit = 20;
+
+    // Elements
+    const screens = {
+      join: document.getElementById('joinScreen'),
+      waiting: document.getElementById('waitingScreen'),
+      question: document.getElementById('questionScreen'),
+      result: document.getElementById('resultScreen'),
+      leaderboard: document.getElementById('leaderboardScreen')
+    };
+
+    function showScreen(name) {
+      Object.values(screens).forEach(s => s.style.display = 'none');
+      screens[name].style.display = 'block';
+    }
+
+    // Join quiz
+    function joinQuiz() {
+      const name = document.getElementById('nameInput').value.trim();
+      if (!name) {
+        document.getElementById('nameInput').focus();
+        return;
+      }
+      playerName = name;
+      socket.emit('join', name);
+    }
+
+    document.getElementById('nameInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinQuiz();
+    });
+
+    // Socket events
+    socket.on('joined', (data) => {
+      document.getElementById('displayName').textContent = `Welcome, ${data.name}! 👋`;
+      showScreen('waiting');
+    });
+
+    socket.on('quizStarting', () => {
+      document.getElementById('displayName').textContent = `Get ready, ${playerName}!`;
+    });
+
+    socket.on('showQuestion', (data) => {
+      currentAnswer = null;
+      timeLeft = data.timeLimit;
+      timeLimit = data.timeLimit;
+
+      document.getElementById('questionNum').textContent = `Question ${data.questionNum}/${data.total}`;
+      document.getElementById('questionText').textContent = data.question;
+      document.getElementById('timerValue').textContent = timeLeft;
+      document.getElementById('timerBar').style.width = '100%';
+      document.getElementById('timer').className = 'timer';
+
+      const optionsEl = document.getElementById('options');
+      optionsEl.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      
+      data.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+        btn.onclick = () => selectAnswer(i);
+        optionsEl.appendChild(btn);
+      });
+
+      showScreen('question');
+      startTimer();
+    });
+
+    function selectAnswer(index) {
+      if (currentAnswer !== null) return;
+      
+      currentAnswer = index;
+      socket.emit('answer', index);
+
+      const options = document.querySelectorAll('.option');
+      options.forEach((opt, i) => {
+        opt.classList.add('disabled');
+        if (i === index) opt.classList.add('selected');
+      });
+    }
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      
+      timerInterval = setInterval(() => {
+        timeLeft -= 0.1;
+        
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timeLeft = 0;
+        }
+
+        document.getElementById('timerValue').textContent = Math.ceil(timeLeft);
+        document.getElementById('timerBar').style.width = `${(timeLeft / timeLimit) * 100}%`;
+
+        const timerEl = document.getElementById('timer');
+        if (timeLeft <= 5) {
+          timerEl.className = 'timer danger';
+        } else if (timeLeft <= 10) {
+          timerEl.className = 'timer warning';
+        }
+      }, 100);
+    }
+
+    socket.on('answerReceived', () => {
+      // Visual feedback that answer was received
+    });
+
+    socket.on('questionResults', (data) => {
+      if (timerInterval) clearInterval(timerInterval);
+
+      // Show correct/wrong on options
+      const options = document.querySelectorAll('.option');
+      options.forEach((opt, i) => {
+        if (i === data.correctAnswer) {
+          opt.classList.add('correct');
+        } else if (i === currentAnswer && currentAnswer !== data.correctAnswer) {
+          opt.classList.add('wrong');
+        }
+      });
+    });
+
+    socket.on('yourResult', (data) => {
+      setTimeout(() => {
+        document.getElementById('resultIcon').textContent = data.correct ? '✅' : '❌';
+        document.getElementById('resultText').textContent = data.correct ? 'Correct!' : 'Wrong!';
+        document.getElementById('resultText').className = `result-text ${data.correct ? 'correct' : 'wrong'}`;
+        document.getElementById('pointsEarned').textContent = data.correct ? `+${data.points}` : '+0';
+        document.getElementById('totalScore').textContent = data.totalScore;
+        document.getElementById('rankBadge').textContent = `Rank #${data.rank}`;
+
+        showScreen('result');
+
+        if (data.correct && data.rank <= 3) {
+          launchConfetti();
+        }
+      }, 1500);
+    });
+
+    socket.on('showLeaderboard', (data) => {
+      const list = document.getElementById('leaderboardList');
+      list.innerHTML = '';
+
+      data.leaderboard.forEach((player, i) => {
+        const item = document.createElement('div');
+        item.className = `leaderboard-item ${player.name === playerName ? 'you' : ''} ${i < 3 ? `top-${i+1}` : ''}`;
+        
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+        
+        item.innerHTML = `
+          <div class="rank">${medal || (i + 1)}</div>
+          <div class="player-info">
+            <div class="name">${player.name}${player.name === playerName ? ' (You)' : ''}</div>
+            <div class="score">${player.score} points</div>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+
+      const myPlayer = data.leaderboard.find(p => p.name === playerName);
+      document.getElementById('yourFinalScore').textContent = myPlayer ? myPlayer.score : 0;
+
+      showScreen('leaderboard');
+
+      if (data.final) {
+        launchConfetti();
+      }
+    });
+
+    socket.on('quizReset', () => {
+      showScreen('waiting');
+      document.getElementById('displayName').textContent = `Welcome back, ${playerName}! 👋`;
+    });
+
+    // Confetti
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#0071e3', '#34c759', '#ff9f0a', '#ff3b30', '#5856d6', '#ffd700'];
+
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          vx: (Math.random() - 0.5) * 10,
+          vy: Math.random() * 3 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 8 + 4,
+          rotation: Math.random() * 360
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let active = false;
+        particles.forEach(p => {
+          if (p.y < canvas.height + 50) {
+            active = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.1;
+            p.rotation += 5;
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation * Math.PI / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+            ctx.restore();
+          }
+        });
+
+        if (active) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      animate();
+    }
+  </script>
+</body>
+</html>
